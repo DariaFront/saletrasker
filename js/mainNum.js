@@ -30,7 +30,7 @@ function parseMoney(str) {
     // Извлекаем число из строки типа "75.2 млрд ₽" или "75,2"
     const match = str.replace(/\s/g, '').match(/([\d,.]+)/);
     if (!match) return 0;
-    return parseFloat(match[1].replace(',', '.')) * 1000000000;
+    return parseFloat(match[1].replace(',', '.'));
 }
 
 // ==============================================
@@ -98,7 +98,7 @@ function parseStatsSmart(doc) {
     const sumElem = doc.querySelector('.total_field .summ span');
     const sumText = sumElem?.textContent?.replace(/\s/g, '') || '0';
     const sumInBillions = parseInt(sumText) || 0;
-    result.totalSum = sumInBillions * 1000000000;
+    result.totalSum = sumInBillions;
 
     // 2. Парсинг таблицы категорий
     const categoryTable = doc.querySelector('.vendor_field .toc-tableR.item');
@@ -108,7 +108,7 @@ function parseStatsSmart(doc) {
             const nameEl = row.querySelector('.toc-leftR');
             const countEl = row.querySelector('.toc-times');
             const sumEl = row.querySelector('.toc-rightR.totall');
-            
+
             if (nameEl && countEl && sumEl) {
                 result.categories.push({
                     name: nameEl.textContent.trim(),
@@ -128,7 +128,7 @@ function parseStatsSmart(doc) {
             const nameEl = row.querySelector('.toc-leftR');
             const countEl = row.querySelector('.toc-times');
             const sumEl = row.querySelector('.toc-rightR.totall');
-            
+
             if (nameEl && countEl && sumEl) {
                 result.buyers.push({
                     name: nameEl.textContent.trim(),
@@ -146,7 +146,7 @@ function parseStatsSmart(doc) {
         const totalViewed = resultBlock.querySelector('.res-1 .res-data span');
         const approved = resultBlock.querySelector('.res-2 .res-data span');
         const rate = resultBlock.querySelector('.res-3 .res-data span');
-        
+
         result.summary = {
             totalNegotiations: parseInt(totalViewed?.textContent.replace(/\s/g, '')) || 0,
             prelimContracts: parseInt(approved?.textContent.replace(/\s/g, '')) || 0,
@@ -171,13 +171,13 @@ function parseStatsSmart(doc) {
     if (result.buyers.length === 0) result.buyers = getDefaultBuyers();
 
     result.lastUpdated = new Date().toISOString();
-    console.log('✅ PARSED STATS:', { 
-        totalSum: result.totalSum, 
+    console.log('✅ PARSED STATS:', {
+        totalSum: result.totalSum,
         summary: result.summary,
         categories: result.categories.length,
         buyers: result.buyers.length
     });
-    
+
     return result;
 }
 
@@ -232,8 +232,8 @@ function updateStatsDOM(data) {
             categories: data.categories.slice(0, 5),
             buyers: data.buyers.slice(0, 5),
             maxValue: Math.max(
-                ...data.categories.slice(0,5).map(c => c.sum),
-                ...data.buyers.slice(0,5).map(b => b.sum)
+                ...data.categories.slice(0, 5).map(c => c.sum),
+                ...data.buyers.slice(0, 5).map(b => b.sum)
             )
         });
     }
